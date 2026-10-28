@@ -1,0 +1,19 @@
+# Build outputs
+out/
+build/
+*.class
+
+# Dependencies and packaged archives
+*.jar
+*.war
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local database configuration (use *.properties.example instead)
+test-config/
+*.properties
+!*.properties.example

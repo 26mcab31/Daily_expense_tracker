@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Daily Expense Tracker - Register</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f3f4f8;
+        }
+
+        .container {
+            width: 900px;
+            min-height: 560px;
+            display: flex;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .left-section {
+            width: 45%;
+            padding: 55px 40px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-section h1 {
+            font-size: 38px;
+            margin-bottom: 20px;
+        }
+
+        .left-section p {
+            font-size: 17px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .features {
+            line-height: 2;
+            font-size: 15px;
+        }
+
+        .right-section {
+            width: 55%;
+            padding: 45px 55px;
+        }
+
+        .right-section h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #6a11cb;
+        }
+
+        .field-error {
+            display: block;
+            min-height: 18px;
+            margin-top: 6px;
+            color: #b91c1c;
+            font-size: 13px;
+        }
+
+        .form-group input[aria-invalid="true"] {
+            border-color: #b91c1c;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #message {
+            margin-top: 18px;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #jsonOutput {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            color: #333;
+            text-align: left;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #6a11cb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 750px) {
+            .container {
+                width: 95%;
+                flex-direction: column;
+            }
+
+            .left-section,
+            .right-section {
+                width: 100%;
+            }
+
+            .left-section {
+                padding: 35px;
+            }
+
+            .right-section {
+                padding: 35px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Left Section -->
+        <div class="left-section">
+
+            <h1>Daily Expense</h1>
+
+            <p>
+                Manage your daily expenses easily and keep
+                track of your spending in one place.
+            </p>
+
+            <div class="features">
+                ✓ Easy expense management<br>
+                ✓ Simple registration<br>
+                ✓ Secure login<br>
+                ✓ Track daily spending
+            </div>
+
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+
+            <h2>Create Account</h2>
+
+            <p class="subtitle">
+                Register to start tracking your expenses
+            </p>
+
+            <form id="registrationForm" action="register" method="post" novalidate>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        pattern="[A-Za-z0-9._\-]{3,50}"
+                        minlength="3"
+                        maxlength="50"
+                        title="Use 3–50 letters, numbers, dots, underscores or hyphens."
+                        autocomplete="username"
+                        aria-describedby="usernameError"
+                        required>
+                    <small class="field-error" id="usernameError" aria-live="polite"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        maxlength="254"
+                        autocomplete="email"
+                        aria-describedby="emailError"
+                        required>
+                    <small class="field-error" id="emailError" aria-live="polite"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="At least 8 characters"
+                        minlength="8"
+                        maxlength="128"
+                        autocomplete="new-password"
+                        aria-describedby="passwordError"
+                        required>
+                    <small class="field-error" id="passwordError" aria-live="polite"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Re-enter your password"
+                        maxlength="128"
+                        autocomplete="new-password"
+                        aria-describedby="confirmPasswordError"
+                        required>
+                    <small class="field-error" id="confirmPasswordError" aria-live="polite"></small>
+                </div>
+
+                <button type="submit">
+                    Register
+                </button>
+
+            </form>
+
+            <!-- Registration message -->
+            <div id="message" role="status" aria-live="polite"></div>
+
+            <div class="login-link">
+                Already have an account?
+                <a href="login">Login</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const messages = {
+            required_fields: "Please complete all required fields.",
+            invalid_username: "Use 3–50 letters, numbers, dots, underscores or hyphens for the username.",
+            invalid_email: "Please enter a valid email address.",
+            invalid_password: "Password must be between 8 and 128 characters.",
+            password_mismatch: "The passwords do not match.",
+            account_exists: "That username or email is already registered.",
+            registration_failed: "Registration could not be completed. Please try again."
+        };
+        const code = new URLSearchParams(window.location.search).get("message");
+        const message = messages[code];
+        if (message) {
+            document.getElementById("message").textContent = message;
+        }
+
+        const registrationForm = document.getElementById("registrationForm");
+        const registrationMessage = document.getElementById("message");
+        const usernameInput = document.getElementById("username");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const confirmationInput = document.getElementById("confirmPassword");
+        const usernamePattern = /^[A-Za-z0-9._-]{3,50}$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function setFieldError(input, message) {
+            const errorElement = document.getElementById(input.id + "Error");
+            errorElement.textContent = message;
+            if (message) {
+                input.setAttribute("aria-invalid", "true");
+            } else {
+                input.removeAttribute("aria-invalid");
+            }
+            return !message;
+        }
+
+        function validateRegistrationField(input) {
+            const value = input.value.trim();
+            let error = "";
+
+            if (!value) {
+                error = "This field is required.";
+            } else if (input === usernameInput && !usernamePattern.test(value)) {
+                error = messages.invalid_username;
+            } else if (input === emailInput
+                    && (value.length > 254 || !emailPattern.test(value))) {
+                error = messages.invalid_email;
+            } else if (input === passwordInput
+                    && (input.value.length < 8 || input.value.length > 128)) {
+                error = messages.invalid_password;
+            } else if (input === confirmationInput
+                    && input.value !== passwordInput.value) {
+                error = messages.password_mismatch;
+            }
+
+            return setFieldError(input, error);
+        }
+
+        const registrationFields = [
+            usernameInput, emailInput, passwordInput, confirmationInput
+        ];
+        registrationFields.forEach(input => {
+            input.addEventListener("input", () => {
+                registrationMessage.textContent = "";
+                validateRegistrationField(input);
+                if (input === passwordInput
+                        && confirmationInput.value) {
+                    validateRegistrationField(confirmationInput);
+                }
+            });
+            input.addEventListener("blur", () => {
+                validateRegistrationField(input);
+            });
+        });
+
+        registrationForm.addEventListener("submit", event => {
+            const valid = registrationFields
+                .map(validateRegistrationField)
+                .every(Boolean);
+            if (!valid) {
+                event.preventDefault();
+                registrationMessage.textContent =
+                    "Please correct the highlighted fields.";
+                registrationMessage.style.color = "#b91c1c";
+            }
+        });
+    </script>
+
+</body>
+
+</html>

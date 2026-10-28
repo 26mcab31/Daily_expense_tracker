@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expense Tracker - Dashboard</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:Arial,sans-serif;background:#f5f7fb;color:#1f2937}
+        .sidebar{position:fixed;left:0;top:0;width:240px;height:100vh;background:linear-gradient(180deg,#4f46e5,#7c3aed);color:white;padding:30px 20px}
+        .logo{text-align:center;margin-bottom:45px}
+        .logo-icon{font-size:38px;margin-bottom:8px}
+        .logo h2{font-size:20px}
+        .logo p{font-size:12px;opacity:.8;margin-top:5px}
+        .menu{display:flex;flex-direction:column;gap:12px}
+        .menu button,.logout button{width:100%;padding:14px;border:0;border-radius:10px;background:transparent;color:white;text-align:left;font-size:15px;cursor:pointer}
+        .menu button:hover,.menu .active{background:rgba(255,255,255,.2)}
+        .logout{position:absolute;bottom:30px;left:20px;right:20px}
+        .logout button{border:1px solid rgba(255,255,255,.5)}
+        .logout button:hover{background:white;color:#4f46e5}
+        .main{margin-left:240px;padding:35px}
+        .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:35px;gap:20px}
+        .welcome h1{font-size:30px;margin-bottom:8px}
+        .welcome p,.card-title,.action-card p{color:#6b7280}
+        .profile{display:flex;align-items:center;gap:12px;background:white;padding:10px 16px;border-radius:30px;box-shadow:0 3px 12px #0001}
+        .profile-icon{width:38px;height:38px;border-radius:50%;background:#4f46e5;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold}
+        .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-bottom:30px}
+        .card,.action-card,.recent{background:white;padding:25px;border-radius:16px;box-shadow:0 4px 15px #0000000f}
+        .card-icon{float:right;font-size:28px}
+        .card-title{font-size:14px;margin-bottom:12px}
+        .card-value{font-size:28px;font-weight:bold;margin-bottom:8px;overflow-wrap:anywhere}
+        .card-small{font-size:12px;color:#9ca3af}
+        .section-title{margin-bottom:18px;font-size:20px}
+        .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+        .action-card{cursor:pointer;transition:.2s}
+        .action-card:hover{transform:translateY(-3px)}
+        .action-icon{font-size:35px;margin-bottom:15px}
+        .action-card h3{margin-bottom:8px}
+        .action-card p{font-size:14px;margin-bottom:18px}
+        .action-card button{padding:10px 18px;border:0;border-radius:8px;background:#4f46e5;color:white;cursor:pointer}
+        .action-card button:hover{background:#4338ca}
+        .recent{margin-top:30px}
+        .recent h2{margin-bottom:18px;font-size:20px}
+        .activity{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid #eee}
+        .activity:last-child{border-bottom:none}
+        .activity-left{display:flex;gap:12px;align-items:center;min-width:0}
+        .activity-icon{width:40px;height:40px;flex-shrink:0;border-radius:10px;background:#eef2ff;display:flex;align-items:center;justify-content:center}
+        .activity p{font-size:14px;overflow-wrap:anywhere}
+        .activity small{color:#9ca3af}
+        .amount{font-weight:bold;white-space:nowrap}
+        .status{margin:0 0 20px;padding:12px 15px;background:#eef2ff;border-radius:8px;color:#4338ca;font-size:14px}
+        .error{background:#fef2f2;color:#b91c1c}
+        .empty{padding:15px 0;color:#6b7280}
+        @media(max-width:900px){.sidebar{width:200px}.main{margin-left:200px;padding:25px}.cards{grid-template-columns:1fr}}
+        @media(max-width:650px){.sidebar{position:relative;width:100%;height:auto}.logo{margin-bottom:20px}.logout{position:relative;left:0;right:0;bottom:auto;margin-top:20px}.main{margin-left:0;padding:20px}.topbar{flex-direction:column;align-items:flex-start}.actions{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">💰</div>
+        <h2>Daily Expense</h2>
+        <p>TRACKER</p>
+    </div>
+    <div class="menu">
+        <button class="active" onclick="goDashboard()">🏠 &nbsp; Dashboard</button>
+        <button onclick="addExpense()">➕ &nbsp; Add Expense</button>
+        <button onclick="viewExpenses()">📋 &nbsp; View Expenses</button>
+    </div>
+    <div class="logout">
+        <button onclick="logout()">🚪 &nbsp; Logout</button>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="topbar">
+        <div class="welcome">
+            <h1>Welcome back 👋</h1>
+            <p>Here's an overview of your daily expenses.</p>
+        </div>
+        <div class="profile">
+            <div class="profile-icon">U</div>
+            <span>My account</span>
+        </div>
+    </div>
+
+    <div id="loadStatus" class="status" role="status" aria-live="polite">
+        Loading expenses from the database...
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="card-icon">💰</div>
+            <div class="card-title">Total Expenses</div>
+            <div class="card-value" id="totalAmount">—</div>
+            <div class="card-small">Based on loaded database records</div>
+        </div>
+        <div class="card">
+            <div class="card-icon">🧾</div>
+            <div class="card-title">Total Transactions</div>
+            <div class="card-value" id="totalCount">—</div>
+            <div class="card-small">Expense records</div>
+        </div>
+        <div class="card">
+            <div class="card-icon">📅</div>
+            <div class="card-title">Today's Spending</div>
+            <div class="card-value" id="todayAmount">—</div>
+            <div class="card-small">Expenses dated today</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="actions">
+        <div class="action-card">
+            <div class="action-icon">➕</div>
+            <h3>Add New Expense</h3>
+            <p>Record your food, travel, shopping and other daily expenses.</p>
+            <button onclick="addExpense()">Add Expense</button>
+        </div>
+        <div class="action-card">
+            <div class="action-icon">📊</div>
+            <h3>View Expenses</h3>
+            <p>View all your recorded expenses in one place.</p>
+            <button onclick="viewExpenses()">View Expenses</button>
+        </div>
+    </div>
+
+    <div class="recent">
+        <h2>Recent Expenses</h2>
+        <div id="recentList" aria-live="polite">
+            <p class="empty">Loading recent expenses...</p>
+        </div>
+    </div>
+</main>
+
+<script>
+    function goDashboard() {
+        window.location.href = "dashboard";
+    }
+
+    function addExpense() {
+        window.location.href = "add-expense.html";
+    }
+
+    function viewExpenses() {
+        window.location.href = "view-expenses.html";
+    }
+
+    function logout() {
+        const form = document.createElement("form");
+        form.method = "post";
+        form.action = "logout";
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    const currency = new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR"
+    });
+
+    function formatAmount(value) {
+        return currency.format(Number(value) || 0);
+    }
+
+    function safeText(value) {
+        return value == null ? "" : String(value);
+    }
+
+    function iconForCategory(category) {
+        const name = safeText(category).toLowerCase();
+        if (name.includes("food")) return "🍔";
+        if (name.includes("travel")) return "🚌";
+        if (name.includes("shopping")) return "🛍️";
+        if (name.includes("health") || name.includes("hospital")) return "🏥";
+        return "💰";
+    }
+
+    function displayDate(dateValue) {
+        if (!dateValue) return "Date unavailable";
+        const parts = String(dateValue).slice(0, 10).split("-");
+        if (parts.length !== 3) return safeText(dateValue);
+        return parts[2] + "-" + parts[1] + "-" + parts[0];
+    }
+
+    function showRecentExpenses(expenses) {
+        const list = document.getElementById("recentList");
+        list.replaceChildren();
+
+        if (expenses.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "empty";
+            empty.textContent = "No expenses recorded yet.";
+            list.appendChild(empty);
+            return;
+        }
+
+        // Sort by expense date, newest first, and show up to five records.
+        const recent = [...expenses].sort((a, b) =>
+            safeText(b.expenseDate).localeCompare(safeText(a.expenseDate))
+        ).slice(0, 5);
+
+        recent.forEach(expense => {
+            const row = document.createElement("div");
+            row.className = "activity";
+
+            const left = document.createElement("div");
+            left.className = "activity-left";
+
+            const icon = document.createElement("div");
+            icon.className = "activity-icon";
+            icon.textContent = iconForCategory(expense.category);
+
+            const details = document.createElement("div");
+            const description = document.createElement("p");
+            const strong = document.createElement("strong");
+            strong.textContent = safeText(expense.description) || "Expense";
+            description.appendChild(strong);
+
+            const small = document.createElement("small");
+            small.textContent = safeText(expense.category) + " • " +
+                displayDate(expense.expenseDate);
+
+            details.append(description, small);
+            left.append(icon, details);
+
+            const amount = document.createElement("div");
+            amount.className = "amount";
+            amount.textContent = formatAmount(expense.amount);
+
+            row.append(left, amount);
+            list.appendChild(row);
+        });
+    }
+
+    async function loadDashboard() {
+        const status = document.getElementById("loadStatus");
+
+        try {
+            const response = await fetch("expenses", {
+                method: "GET",
+                headers: { "Accept": "application/json" },
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error("Server returned HTTP " + response.status);
+            }
+
+            const expenses = await response.json();
+
+            if (!Array.isArray(expenses)) {
+                throw new Error("The server response is not an expense list.");
+            }
+
+            const total = expenses.reduce((sum, item) => {
+                const amount = Number(item.amount);
+                if (!Number.isFinite(amount)) {
+                    throw new Error("An expense has an invalid amount.");
+                }
+                return sum + amount;
+            }, 0);
+
+            const today = new Date();
+            const todayString =
+                today.getFullYear() + "-" +
+                String(today.getMonth() + 1).padStart(2, "0") + "-" +
+                String(today.getDate()).padStart(2, "0");
+
+            const todayTotal = expenses.reduce((sum, item) => {
+                if (safeText(item.expenseDate).slice(0, 10) === todayString) {
+                    const amount = Number(item.amount);
+                    if (!Number.isFinite(amount)) {
+                        throw new Error("An expense has an invalid amount.");
+                    }
+                    return sum + amount;
+                }
+                return sum;
+            }, 0);
+
+            document.getElementById("totalAmount").textContent =
+                formatAmount(total);
+            document.getElementById("totalCount").textContent =
+                String(expenses.length);
+            document.getElementById("todayAmount").textContent =
+                formatAmount(todayTotal);
+
+            showRecentExpenses(expenses);
+
+            status.className = "status";
+            status.textContent = "Successfully loaded " + expenses.length +
+                " expense record(s) from the database.";
+        } catch (error) {
+            status.className = "status error";
+            status.textContent =
+                "Could not load dashboard data. Check that Tomcat is running and the /expenses endpoint is available.";
+
+            document.getElementById("totalAmount").textContent = "Unavailable";
+            document.getElementById("totalCount").textContent = "Unavailable";
+            document.getElementById("todayAmount").textContent = "Unavailable";
+
+            const list = document.getElementById("recentList");
+            list.replaceChildren();
+            const message = document.createElement("p");
+            message.className = "empty";
+            message.textContent = "Recent expenses could not be loaded.";
+            list.appendChild(message);
+
+            console.error("Dashboard loading failed:", error);
+        }
+    }
+
+    loadDashboard();
+</script>
+</body>
+</html>

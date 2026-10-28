@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Expenses | Daily Expense Tracker</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f4f5fb;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: #4f46e5;
+            margin-top: 0;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #4f46e5;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background: #3730a3;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            background: #4f46e5;
+            color: white;
+        }
+
+        tr:hover td {
+            background: #f8f8ff;
+        }
+
+        #message {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 6px;
+            background: #eef2ff;
+            color: #3730a3;
+        }
+
+        .error {
+            background: #fee2e2 !important;
+            color: #991b1b !important;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <h1>My Expenses</h1>
+
+            <div>
+                <a class="button" href="dashboard">Dashboard</a>
+                <a class="button" href="add-expense.html">Add Expense</a>
+                <button class="button" type="button" onclick="loadExpenses()">Refresh</button>
+            </div>
+        </div>
+
+        <p>View all expenses saved in your database.</p>
+
+        <div id="message" role="status">Loading expenses...</div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Amount (₹)</th>
+                    </tr>
+                </thead>
+
+                <tbody id="expenseTable">
+                    <tr>
+                        <td colspan="5">Loading records...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total" id="totalAmount">Total: ₹0.00</div>
+    </div>
+
+    <script>
+        async function loadExpenses() {
+            const message = document.getElementById("message");
+            const table = document.getElementById("expenseTable");
+            const totalElement = document.getElementById("totalAmount");
+
+            message.className = "";
+            message.textContent = "Loading expenses...";
+            table.innerHTML = "";
+            totalElement.textContent = "Total: ₹0.00";
+
+            try {
+                const response = await fetch("expenses", {
+                    method: "GET",
+                    cache: "no-store"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Server returned status " + response.status);
+                }
+
+                const expenses = await response.json();
+
+                if (!Array.isArray(expenses)) {
+                    throw new Error("The server did not return an expense list.");
+                }
+
+                if (expenses.length === 0) {
+                    table.innerHTML =
+                        '<tr><td colspan="5">No expenses found.</td></tr>';
+                    message.textContent = "No expenses have been recorded yet.";
+                    return;
+                }
+
+                let total = 0;
+
+                expenses.forEach((expense, index) => {
+                    const amount = Number(expense.amount) || 0;
+                    total += amount;
+
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        index + 1,
+                        expense.expenseDate || "",
+                        expense.category || "",
+                        expense.description || "",
+                        amount.toLocaleString("en-IN", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })
+                    ];
+
+                    values.forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+
+                totalElement.textContent = "Total: ₹" +
+                    total.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                message.textContent =
+                    "Successfully loaded " + expenses.length + " expense record(s).";
+
+            } catch (error) {
+                console.error("Unable to load expenses:", error);
+
+                table.innerHTML =
+                    '<tr><td colspan="5">Unable to display expenses.</td></tr>';
+
+                message.className = "error";
+                message.textContent =
+                    "Unable to load expenses. Please check the server and try again.";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadExpenses);
+    </script>
+</body>
+</html>

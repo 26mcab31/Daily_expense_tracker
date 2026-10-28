@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expense Tracker - Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 20px;
+        }
+
+        .page {
+            width: 900px;
+            max-width: 100%;
+            min-height: 560px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-section {
+            background: linear-gradient(160deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 55px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-section h1 {
+            font-size: 34px;
+            margin-bottom: 15px;
+        }
+
+        .welcome-section p {
+            line-height: 1.7;
+            opacity: 0.9;
+            font-size: 15px;
+        }
+
+        .features {
+            margin-top: 35px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-section {
+            padding: 55px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-section h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 5px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(79, 70, 229, 0.3);
+        }
+
+        .message {
+            min-height: 22px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .field-error {
+            display: block;
+            min-height: 18px;
+            margin-top: 6px;
+            color: #b91c1c;
+            font-size: 13px;
+        }
+
+        input[aria-invalid="true"] {
+            border-color: #b91c1c;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 750px) {
+            .page {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-section {
+                padding: 35px;
+            }
+
+            .welcome-section h1 {
+                font-size: 28px;
+            }
+
+            .features {
+                display: none;
+            }
+
+            .login-section {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <div class="welcome-section">
+            <div class="logo">💰</div>
+
+            <h1>Daily Expense Tracker</h1>
+
+            <p>
+                Take control of your daily spending.
+                Track your expenses, understand your spending
+                habits and manage your money easily.
+            </p>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">✓</div>
+                    <span>Easy expense tracking</span>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">✓</div>
+                    <span>Organized expense records</span>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">✓</div>
+                    <span>Simple and user-friendly interface</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-section">
+
+            <h2>Welcome Back</h2>
+
+            <p class="subtitle">
+                Login to continue to your expense tracker
+            </p>
+
+            <form id="loginForm" action="login" method="post" novalidate>
+
+                <div class="input-group">
+                    <label for="username">Username or Email</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username or email"
+                        maxlength="254"
+                        autocomplete="username"
+                        aria-describedby="usernameError"
+                        required>
+                    <small class="field-error" id="usernameError" aria-live="polite"></small>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        aria-describedby="passwordError"
+                        required>
+                    <small class="field-error" id="passwordError" aria-live="polite"></small>
+                </div>
+
+                <button type="submit" class="login-button">
+                    Login
+                </button>
+
+                <div
+                    class="message"
+                    id="message"
+                    role="status"
+                    aria-live="polite">
+                </div>
+
+            </form>
+
+            <div class="register-link">
+                Don't have an account?
+                <a href="register">Create an account</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const message = document.getElementById("message");
+        const usernamePattern = /^[A-Za-z0-9._-]{3,50}$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        if (params.has("error")) {
+            message.textContent = "Invalid username/email or password. Please try again.";
+        } else if (params.has("registered")) {
+            message.style.color = "#16a34a";
+            message.textContent = "Registration successful. You can now log in.";
+        } else if (params.has("logout")) {
+            message.textContent = "You have been logged out.";
+        }
+
+        function setLoginFieldError(input, text) {
+            const errorElement =
+                document.getElementById(input.id + "Error");
+            errorElement.textContent = text;
+            if (text) {
+                input.setAttribute("aria-invalid", "true");
+            } else {
+                input.removeAttribute("aria-invalid");
+            }
+            return !text;
+        }
+
+        function validateLoginField(input) {
+            const value = input.value.trim();
+            let error = "";
+            if (!value) {
+                error = "This field is required.";
+            } else if (input === usernameInput
+                    && (value.includes("@")
+                        ? value.length > 254 || !emailPattern.test(value)
+                        : !usernamePattern.test(value))) {
+                error = "Enter a valid username or email address.";
+            }
+            return setLoginFieldError(input, error);
+        }
+
+        [usernameInput, passwordInput].forEach(input => {
+            input.addEventListener("input", () => {
+                message.textContent = "";
+                validateLoginField(input);
+            });
+            input.addEventListener("blur", () => validateLoginField(input));
+        });
+
+        document.getElementById("loginForm").addEventListener("submit", event => {
+            const valid = [usernameInput, passwordInput]
+                .map(validateLoginField)
+                .every(Boolean);
+            if (!valid) {
+                event.preventDefault();
+                message.style.color = "#b91c1c";
+                message.textContent = "Please correct the highlighted fields.";
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense | Daily Expense Tracker</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f4f5fb;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 620px;
+            background: white;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 10px 35px rgba(31, 41, 55, 0.10);
+        }
+
+        .header {
+            margin-bottom: 26px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            color: #4f46e5;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 15px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+
+        textarea {
+            min-height: 95px;
+            resize: vertical;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        button, .back-link {
+            flex: 1;
+            text-align: center;
+            padding: 13px 16px;
+            border: none;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        button {
+            background: #4f46e5;
+            color: white;
+        }
+
+        button:hover {
+            background: #4338ca;
+        }
+
+        .back-link {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .note {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .message {
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 9px;
+            background: #eef2ff;
+            color: #3730a3;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 22px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <div class="header">
+            <h1>Add Expense</h1>
+            <p>Enter your expense details below and save them to your expense tracker.</p>
+        </div>
+
+        <form id="expenseForm" action="expenses" method="post" accept-charset="UTF-8">
+            <div class="form-group">
+                <label for="expenseDate">Expense Date</label>
+                <input
+                    type="date"
+                    id="expenseDate"
+                    name="expenseDate"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Select a category</option>
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Education">Education</option>
+                    <option value="Health">Health</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Enter expense details"
+                    maxlength="255"
+                    required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount (₹)</label>
+                <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    placeholder="Enter amount"
+                    min="0.01"
+                    max="99999999.99"
+                    step="0.01"
+                    required>
+            </div>
+
+            <div class="buttons">
+                <button id="saveButton" type="submit">Save Expense</button>
+                <a class="back-link" href="dashboard">Back to Dashboard</a>
+            </div>
+        </form>
+
+        <p id="formMessage" class="message" role="status" aria-live="polite" hidden></p>
+
+        <p class="note">
+            All fields are required. Enter an amount greater than zero.
+            A successful save will appear here; the dashboard reloads the latest totals.
+        </p>
+    </main>
+    <script>
+        const expenseForm = document.getElementById("expenseForm");
+        const saveButton = document.getElementById("saveButton");
+        const formMessage = document.getElementById("formMessage");
+
+        expenseForm.addEventListener("submit", async event => {
+            event.preventDefault();
+            saveButton.disabled = true;
+            formMessage.hidden = false;
+            formMessage.className = "message";
+            formMessage.textContent = "Saving expense...";
+
+            try {
+                const formData = new FormData(expenseForm);
+                const response = await fetch(expenseForm.action, {
+                    method: expenseForm.method,
+                    headers: { "Accept": "text/plain" },
+                    body: new URLSearchParams(formData)
+                });
+                let result = (await response.text()).trim();
+
+                if (!response.ok) {
+                    try {
+                        const error = JSON.parse(result);
+                        if (error.error) result = error.error;
+                    } catch (parseError) {
+                        // Keep the plain-text server message.
+                    }
+                    throw new Error(result || "Unable to save the expense.");
+                }
+
+                formMessage.className = "message success";
+                formMessage.textContent = result || "Expense saved successfully.";
+                expenseForm.reset();
+            } catch (error) {
+                formMessage.className = "message error";
+                formMessage.textContent =
+                    error.message || "Unable to save the expense. Please try again.";
+            } finally {
+                saveButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
