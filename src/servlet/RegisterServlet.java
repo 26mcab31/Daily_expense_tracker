@@ -1,3 +1,4 @@
+
 package servlet;
 
 import dao.UserDAO;
@@ -37,14 +38,18 @@ public class RegisterServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
+
         response.setHeader("Cache-Control", "no-store");
-        request.getRequestDispatcher("/register.html").forward(request, response);
+
+        request.getRequestDispatcher("/register.html")
+                .forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
+
         request.setCharacterEncoding("UTF-8");
 
         String username = trim(request.getParameter("username"));
@@ -56,10 +61,13 @@ public class RegisterServlet extends HttpServlet {
                 || email == null || email.isEmpty()
                 || password == null || password.isEmpty()
                 || confirmation == null || confirmation.isEmpty()) {
+
             redirectWithMessage(request, response, "required_fields");
             return;
         }
+
         email = email.toLowerCase(Locale.ROOT);
+
         if (!password.equals(confirmation)) {
             redirectWithMessage(request, response, "password_mismatch");
             return;
@@ -68,27 +76,88 @@ public class RegisterServlet extends HttpServlet {
         try {
             userOperations.validateRegistration(
                     new User(username, password, email));
+
         } catch (InvalidInputException e) {
             redirectWithMessage(request, response, e.getMessage());
             return;
         }
 
         char[] passwordChars = password.toCharArray();
+
         try {
             String passwordHash = PasswordUtil.hash(passwordChars);
+
             if (!userDAO.create(username, email, passwordHash)) {
                 redirectWithMessage(request, response, "account_exists");
                 return;
             }
+
+            // Build JSON for the server console.
+            // Never log passwords or password hashes.
+            String registrationJson =
+                    "{\"success\":true,"
+                    + "\"username\":" + jsonEscape(username) + ","
+                    + "\"email\":" + jsonEscape(email) + ","
+                    + "\"message\":\"Registration successful\"}";
+
+            // Display registration JSON in the Tomcat console.
+            System.out.println("Registration JSON: " + registrationJson);
+
+            // Keep the original redirect to the login page.
             response.sendRedirect(request.getContextPath()
                     + "/login?registered=1");
+
         } catch (SQLException | ClassNotFoundException
                  | GeneralSecurityException e) {
+
             log("Unable to register user", e);
-            redirectWithMessage(request, response, "registration_failed");
+
+            redirectWithMessage(request, response,
+                    "registration_failed");
+
         } finally {
             Arrays.fill(passwordChars, '\0');
         }
+    }
+
+    private String jsonEscape(String value) {
+
+        StringBuilder result = new StringBuilder("\"");
+
+        for (char c : value.toCharArray()) {
+            switch (c) {
+                case '"':
+                    result.append("\\\"");
+                    break;
+                case '\\':
+                    result.append("\\\\");
+                    break;
+                case '\b':
+                    result.append("\\b");
+                    break;
+                case '\f':
+                    result.append("\\f");
+                    break;
+                case '\n':
+                    result.append("\\n");
+                    break;
+                case '\r':
+                    result.append("\\r");
+                    break;
+                case '\t':
+                    result.append("\\t");
+                    break;
+                default:
+                    if (c < 0x20) {
+                        result.append(
+                                String.format("\\u%04x", (int) c));
+                    } else {
+                        result.append(c);
+                    }
+            }
+        }
+
+        return result.append('"').toString();
     }
 
     private String trim(String value) {
@@ -99,6 +168,7 @@ public class RegisterServlet extends HttpServlet {
                                      HttpServletResponse response,
                                      String message)
             throws IOException {
+
         response.sendRedirect(request.getContextPath()
                 + "/register?message=" + message);
     }
